@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>七龙珠营养追踪器</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', 'Chalkboard SE', sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border: 3px solid #000;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 8px 8px 0 #000;
+            position: relative;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: bold;
+            color: #000;
+            text-shadow: 2px 2px 0 #ccc;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .dragon-ball-icon {
+            width: 70px;
+            height: 70px;
+            margin: 0 auto 15px;
+        }
+
+        .section {
+            margin-bottom: 25px;
+            padding: 15px;
+            border: 2px solid #000;
+            border-radius: 15px;
+            background: #fafafa;
+            box-shadow: 4px 4px 0 #000;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .icon-svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .goals-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .goal-card {
+            border: 2px solid #000;
+            border-radius: 10px;
+            padding: 12px 8px;
+            text-align: center;
+            background: white;
+            box-shadow: 3px 3px 0 #000;
+        }
+
+        .goal-card .icon-wrapper {
+            margin-bottom: 8px;
+        }
+
+        .goal-card .icon-wrapper svg {
+            width: 32px;
+            height: 32px;
+        }
+
+        .goal-card h3 {
+            font-size: 13px;
+            margin-bottom: 6px;
+        }
+
+        .goal-card .calories {
+            font-size: 15px;
+            font-weight: bold;
+            color: #000;
+        }
+
+        .goal-card .grams {
+            font-size: 11px;
+            color: #666;
+            margin-top: 4px;
+        }
+
+        .progress-section {
+            margin-bottom: 20px;
+        }
+
+        .progress-item {
+            margin-bottom: 15px;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+
+        .progress-label .icon-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .progress-label .icon-wrapper svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .progress-bar-container {
+            height: 25px;
+            border: 2px solid #000;
+            border-radius: 12px;
+            background: #fff;
+            overflow: hidden;
+            box-shadow: 2px 2px 0 #000;
+            position: relative;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: repeating-linear-gradient(
+                45deg,
+                #000,
+                #000 10px,
+                #333 10px,
+                #333 20px
+            );
+            transition: width 0.5s ease;
+            position: relative;
+        }
+
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(
+                90deg,
+                transparent 0%,
+                rgba(255,255,255,0.2) 50%,
+                transparent 100%
+            );
+            animation: shine 2s infinite;
+        }
+
+        @keyframes shine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .input-form {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+
+        .input-group label {
+            font-size: 12px;
+            margin-bottom: 5px;
+            font-weight: bold;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .input-group label svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .input-group input {
+            border: 2px solid #000;
+            border-radius: 8px;
+            padding: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            background: white;
+            box-shadow: 2px 2px 0 #000;
+            transition: all 0.2s;
+            width: 100%;
+            min-width: 0;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            box-shadow: 4px 4px 0 #000;
+            transform: translate(-1px, -1px);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px 20px;
+            border: 3px solid #000;
+            border-radius: 10px;
+            background: #000;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            font-family: inherit;
+            cursor: pointer;
+            box-shadow: 4px 4px 0 #000;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .btn:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 6px 6px 0 #000;
+        }
+
+        .btn:active {
+            transform: translate(2px, 2px);
+            box-shadow: 2px 2px 0 #000;
+        }
+
+        .btn-clear {
+            background: white;
+            color: #000;
+            margin-top: 10px;
+        }
+
+        .records-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .record-item {
+            border: 2px solid #000;
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 10px;
+            background: white;
+            box-shadow: 3px 3px 0 #000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .record-info {
+            flex: 1;
+        }
+
+        .record-time {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .record-details {
+            font-size: 14px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .record-detail {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .record-detail svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .record-detail .value {
+            color: #000;
+            font-weight: 500;
+        }
+
+        .record-delete {
+            background: #000;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 6px 12px;
+            cursor: pointer;
+            font-size: 12px;
+            font-family: inherit;
+            box-shadow: 2px 2px 0 #000;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .record-delete svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .record-delete:hover {
+            transform: translate(-1px, -1px);
+            box-shadow: 3px 3px 0 #000;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 30px;
+            color: #999;
+            font-size: 14px;
+        }
+
+        .empty-state svg {
+            width: 48px;
+            height: 48px;
+            margin-bottom: 10px;
+            opacity: 0.5;
+        }
+
+        .total-summary {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .total-card {
+            border: 2px solid #000;
+            border-radius: 10px;
+            padding: 12px 8px;
+            text-align: center;
+            background: #000;
+            color: white;
+            box-shadow: 3px 3px 0 #000;
+        }
+
+        .total-card .icon-wrapper {
+            margin-bottom: 6px;
+        }
+
+        .total-card .icon-wrapper svg {
+            width: 24px;
+            height: 24px;
+            fill: white;
+        }
+
+        .total-card h4 {
+            font-size: 11px;
+            margin-bottom: 4px;
+            opacity: 0.9;
+        }
+
+        .total-card .value {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .total-card .unit {
+            font-size: 10px;
+            opacity: 0.8;
+        }
+
+        .power-level {
+            text-align: center;
+            padding: 15px;
+            border: 3px solid #000;
+            border-radius: 15px;
+            background: linear-gradient(135deg, #000 0%, #333 100%);
+            color: white;
+            margin-bottom: 20px;
+            box-shadow: 5px 5px 0 #000;
+        }
+
+        .power-level .icon-wrapper {
+            margin-bottom: 8px;
+        }
+
+        .power-level .icon-wrapper svg {
+            width: 28px;
+            height: 28px;
+            fill: white;
+        }
+
+        .power-level h2 {
+            font-size: 13px;
+            margin-bottom: 8px;
+            opacity: 0.9;
+        }
+
+        .power-level .value {
+            font-size: 32px;
+            font-weight: bold;
+            text-shadow: 2px 2px 0 #000;
+        }
+
+        .power-level .label {
+            font-size: 12px;
+            margin-top: 5px;
+            opacity: 0.8;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 15px;
+            }
+
+            .header h1 {
+                font-size: 22px;
+            }
+
+            .goals-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .input-form {
+                grid-template-columns: 1fr;
+            }
+
+            .record-details {
+                flex-direction: column;
+                gap: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="dragon-ball-icon">
+                <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="50" cy="50" r="45" fill="#fff" stroke="#000" stroke-width="4"/>
+                    <circle cx="50" cy="50" r="6" fill="#000"/>
+                    <circle cx="50" cy="25" r="4" fill="#000"/>
+                </svg>
+            </div>
+            <h1>
+                <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <circle cx="12" cy="12" r="3"/>
+                    <circle cx="12" cy="5" r="2"/>
+                </svg>
+                七龙珠营养追踪器
+                <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <circle cx="12" cy="12" r="3"/>
+                    <circle cx="12" cy="5" r="2"/>
+                </svg>
+            </h1>
+        </div>
+
+        <div class="section">
+            <div class="section-title">
+                <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                </svg>
+                每日目标（战斗力值）
+            </div>
+            <div class="goals-grid">
+                <div class="goal-card">
+                    <div class="icon-wrapper">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                            <path d="M4 8h16"/>
+                            <path d="M8 12h8"/>
+                            <path d="M8 16h4"/>
+                        </svg>
+                    </div>
+                    <h3>碳水</h3>
+                    <div class="calories">950 千卡</div>
+                    <div class="grams">237 克</div>
+                </div>
+                <div class="goal-card">
+                    <div class="icon-wrapper">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M8 2h8v4H8z"/>
+                            <path d="M6 6h12v14a2 2 0 01-2 2H8a2 2 0 01-2-2V6z"/>
+                            <path d="M10 10v8"/>
+                            <path d="M14 10v8"/>
+                        </svg>
+                    </div>
+                    <h3>蛋白质</h3>
+                    <div class="calories">570 千卡</div>
+                    <div class="grams">142 克</div>
+                </div>
+                <div class="goal-card">
+                    <div class="icon-wrapper">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                            <path d="M2 17l10 5 10-5"/>
+                            <path d="M2 12l10 5 10-5"/>
+                        </svg>
+                    </div>
+                    <h3>脂肪</h3>
+                    <div class="calories">380 千卡</div>
+                    <div class="grams">42 克</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">
+                <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                </svg>
+                当前能量进度
+            </div>
+            <div class="power-level">
+                <div class="icon-wrapper">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                    </svg>
+                </div>
+                <h2>今日总战斗力</h2>
+                <div class="value" id="totalPower">0</div>
+                <div class="label">千卡 / 1900 千卡</div>
+            </div>
+            <div class="progress-section">
+                <div class="progress-item">
+                    <div class="progress-label">
+                        <span class="icon-wrapper">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                                <path d="M4 8h16"/>
+                                <path d="M8 12h8"/>
+                                <path d="M8 16h4"/>
+                            </svg>
+                            碳水
+                        </span>
+                        <span id="carbsProgressText">0 / 237 克</span>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" id="carbsProgress" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div class="progress-item">
+                    <div class="progress-label">
+                        <span class="icon-wrapper">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M8 2h8v4H8z"/>
+                                <path d="M6 6h12v14a2 2 0 01-2 2H8a2 2 0 01-2-2V6z"/>
+                                <path d="M10 10v8"/>
+                                <path d="M14 10v8"/>
+                            </svg>
+                            蛋白质
+                        </span>
+                        <span id="proteinProgressText">0 / 142 克</span>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" id="proteinProgress" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div class="progress-item">
+                    <div class="progress-label">
+                        <span class="icon-wrapper">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                                <path d="M2 17l10 5 10-5"/>
+                                <path d="M2 12l10 5 10-5"/>
+                            </svg>
+                            脂肪
+                        </span>
+                        <span id="fatProgressText">0 / 42 克</span>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" id="fatProgress" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">
+                <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+                    <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                </svg>
+                记录摄入
+            </div>
+            <div class="input-form">
+                <div class="input-group">
+                    <label>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                            <path d="M4 8h16"/>
+                            <path d="M8 12h8"/>
+                            <path d="M8 16h4"/>
+                        </svg>
+                        碳水 (克)
+                    </label>
+                    <input type="number" id="carbsInput" placeholder="0" min="0">
+                </div>
+                <div class="input-group">
+                    <label>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M8 2h8v4H8z"/>
+                            <path d="M6 6h12v14a2 2 0 01-2 2H8a2 2 0 01-2-2V6z"/>
+                            <path d="M10 10v8"/>
+                            <path d="M14 10v8"/>
+                        </svg>
+                        蛋白质 (克)
+                    </label>
+                    <input type="number" id="proteinInput" placeholder="0" min="0">
+                </div>
+                <div class="input-group">
+                    <label>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                            <path d="M2 17l10 5 10-5"/>
+                            <path d="M2 12l10 5 10-5"/>
+                        </svg>
+                        脂肪 (克)
+                    </label>
+                    <input type="number" id="fatInput" placeholder="0" min="0">
+                </div>
+            </div>
+            <button class="btn" onclick="addRecord()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                </svg>
+                添加记录
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                </svg>
+            </button>
+            <button class="btn btn-clear" onclick="clearTodayRecords()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 6h18"/>
+                    <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+                </svg>
+                清空今日记录
+            </button>
+        </div>
+
+        <div class="section">
+            <div class="section-title">
+                <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                </svg>
+                今日摄入记录
+            </div>
+            <div class="total-summary">
+                <div class="total-card">
+                    <div class="icon-wrapper">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                            <path d="M4 8h16"/>
+                            <path d="M8 12h8"/>
+                            <path d="M8 16h4"/>
+                        </svg>
+                    </div>
+                    <h4>碳水</h4>
+                    <div class="value" id="totalCarbs">0</div>
+                    <div class="unit">克</div>
+                </div>
+                <div class="total-card">
+                    <div class="icon-wrapper">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M8 2h8v4H8z"/>
+                            <path d="M6 6h12v14a2 2 0 01-2 2H8a2 2 0 01-2-2V6z"/>
+                            <path d="M10 10v8"/>
+                            <path d="M14 10v8"/>
+                        </svg>
+                    </div>
+                    <h4>蛋白质</h4>
+                    <div class="value" id="totalProtein">0</div>
+                    <div class="unit">克</div>
+                </div>
+                <div class="total-card">
+                    <div class="icon-wrapper">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                            <path d="M2 17l10 5 10-5"/>
+                            <path d="M2 12l10 5 10-5"/>
+                        </svg>
+                    </div>
+                    <h4>脂肪</h4>
+                    <div class="value" id="totalFat">0</div>
+                    <div class="unit">克</div>
+                </div>
+            </div>
+            <div class="records-list" id="recordsList">
+                <div class="empty-state">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                    </svg>
+                    还没有记录，开始记录你的营养摄入吧！
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const DAILY_GOALS = {
+            carbs: { calories: 950, grams: 237 },
+            protein: { calories: 570, grams: 142 },
+            fat: { calories: 380, grams: 42 }
+        };
+
+        const CALORIES_PER_GRAM = {
+            carbs: 4,
+            protein: 4,
+            fat: 9
+        };
+
+        function getTodayKey() {
+            return 'nutrition_records_' + new Date().toDateString();
+        }
+
+        function getRecords() {
+            const key = getTodayKey();
+            const records = localStorage.getItem(key);
+            return records ? JSON.parse(records) : [];
+        }
+
+        function saveRecords(records) {
+            const key = getTodayKey();
+            localStorage.setItem(key, JSON.stringify(records));
+        }
+
+        function calculateTotals(records) {
+            return records.reduce((acc, record) => {
+                acc.carbs += record.carbs;
+                acc.protein += record.protein;
+                acc.fat += record.fat;
+                return acc;
+            }, { carbs: 0, protein: 0, fat: 0 });
+        }
+
+        function calculateCalories(carbs, protein, fat) {
+            return (carbs * CALORIES_PER_GRAM.carbs) +
+                   (protein * CALORIES_PER_GRAM.protein) +
+                   (fat * CALORIES_PER_GRAM.fat);
+        }
+
+        function updateProgress() {
+            const records = getRecords();
+            const totals = calculateTotals(records);
+
+            const totalCalories = calculateCalories(totals.carbs, totals.protein, totals.fat);
+            const goalCalories = DAILY_GOALS.carbs.calories + DAILY_GOALS.protein.calories + DAILY_GOALS.fat.calories;
+
+            document.getElementById('totalPower').textContent = Math.round(totalCalories);
+
+            const carbsPercent = Math.min((totals.carbs / DAILY_GOALS.carbs.grams) * 100, 100);
+            const proteinPercent = Math.min((totals.protein / DAILY_GOALS.protein.grams) * 100, 100);
+            const fatPercent = Math.min((totals.fat / DAILY_GOALS.fat.grams) * 100, 100);
+
+            document.getElementById('carbsProgress').style.width = carbsPercent + '%';
+            document.getElementById('proteinProgress').style.width = proteinPercent + '%';
+            document.getElementById('fatProgress').style.width = fatPercent + '%';
+
+            document.getElementById('carbsProgressText').textContent = `${totals.carbs} / ${DAILY_GOALS.carbs.grams} 克`;
+            document.getElementById('proteinProgressText').textContent = `${totals.protein} / ${DAILY_GOALS.protein.grams} 克`;
+            document.getElementById('fatProgressText').textContent = `${totals.fat} / ${DAILY_GOALS.fat.grams} 克`;
+
+            document.getElementById('totalCarbs').textContent = totals.carbs;
+            document.getElementById('totalProtein').textContent = totals.protein;
+            document.getElementById('totalFat').textContent = totals.fat;
+        }
+
+        function renderRecords() {
+            const records = getRecords();
+            const recordsList = document.getElementById('recordsList');
+
+            if (records.length === 0) {
+                recordsList.innerHTML = `
+                    <div class="empty-state">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                        </svg>
+                        还没有记录，开始记录你的营养摄入吧！
+                    </div>`;
+                return;
+            }
+
+            recordsList.innerHTML = records.map((record, index) => `
+                <div class="record-item">
+                    <div class="record-info">
+                        <div class="record-time">${record.time}</div>
+                        <div class="record-details">
+                            <div class="record-detail">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                                    <path d="M4 8h16"/>
+                                    <path d="M8 12h8"/>
+                                    <path d="M8 16h4"/>
+                                </svg>
+                                <span class="value">${record.carbs}g</span>
+                            </div>
+                            <div class="record-detail">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M8 2h8v4H8z"/>
+                                    <path d="M6 6h12v14a2 2 0 01-2 2H8a2 2 0 01-2-2V6z"/>
+                                    <path d="M10 10v8"/>
+                                    <path d="M14 10v8"/>
+                                </svg>
+                                <span class="value">${record.protein}g</span>
+                            </div>
+                            <div class="record-detail">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                                    <path d="M2 17l10 5 10-5"/>
+                                    <path d="M2 12l10 5 10-5"/>
+                                </svg>
+                                <span class="value">${record.fat}g</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="record-delete" onclick="deleteRecord(${index})">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                        </svg>
+                        删除
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function addRecord() {
+            const carbs = parseFloat(document.getElementById('carbsInput').value) || 0;
+            const protein = parseFloat(document.getElementById('proteinInput').value) || 0;
+            const fat = parseFloat(document.getElementById('fatInput').value) || 0;
+
+            if (carbs === 0 && protein === 0 && fat === 0) {
+                alert('请至少输入一项营养素的数值！');
+                return;
+            }
+
+            const now = new Date();
+            const time = now.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+
+            const record = {
+                carbs,
+                protein,
+                fat,
+                time,
+                timestamp: now.getTime()
+            };
+
+            const records = getRecords();
+            records.push(record);
+            saveRecords(records);
+
+            document.getElementById('carbsInput').value = '';
+            document.getElementById('proteinInput').value = '';
+            document.getElementById('fatInput').value = '';
+
+            updateProgress();
+            renderRecords();
+        }
+
+        function deleteRecord(index) {
+            const records = getRecords();
+            records.splice(index, 1);
+            saveRecords(records);
+            updateProgress();
+            renderRecords();
+        }
+
+        function clearTodayRecords() {
+            if (confirm('确定要清空今日的所有记录吗？')) {
+                const key = getTodayKey();
+                localStorage.removeItem(key);
+                updateProgress();
+                renderRecords();
+            }
+        }
+
+        function init() {
+            updateProgress();
+            renderRecords();
+        }
+
+        init();
+    </script>
+</body>
+</html>
